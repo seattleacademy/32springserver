@@ -1,4 +1,3 @@
-
 const express = require('express');
 const app = express();
 const http = require('http').Server(app);
@@ -7,33 +6,34 @@ const port = process.env.PORT || 1500;
 
 app.use(express.static(__dirname + '/public'));
 var bots = [];
-myBot = {}
-myBot.x = 40;
-myBot.y = 100;
-myBot.r = 15;
-myBot.theta = 0;
-myBot.color = "green";
 
-function botStatus(data){
-	bots.push(data);
+
+function botStatus(data) {
+    var myColor = data.color;
+    if (bots.length > 0) {
+        for (var i = bots.length; i > 0; i--) {
+            if (myColor == bots[i-1].color) {
+                bots.splice(i-1);
+            }
+        }
+    }
+    bots.push(data);
+    console.log("bots after push",bots);
 }
 
-function onConnection(socket){
-	console.log(myBot);
-	socket.broadcast.emit('drawing', myBot);
-	function drawAllBots(){
-		for(i=0; i<bots.length; i++){
-			socket.broadcast.emit('drawing', bots[i]);
-		}
-	}
-	function onDrawing(data){
-		console.log("onDrawing",data);
-		botStatus(data);
-		drawAllBots();
-		//socket.broadcast.emit('drawing', data);
-	}
-  socket.on('drawing', onDrawing);
-  //socket.on('drawing', (data) => socket.broadcast.emit('drawing', data));
+function onConnection(socket) {
+    function drawAllBots() {
+    	socket.broadcast.emit('clear', "");
+        for (i = 0; i < bots.length; i++) {
+            socket.broadcast.emit('drawing', bots[i]);
+        }
+    }
+
+    function onDrawing(data) {
+        botStatus(data);
+        drawAllBots();
+    }
+    socket.on('drawing', onDrawing);
 }
 
 io.on('connection', onConnection);

@@ -10,7 +10,7 @@ var bots = [];
 
 function onConnection(socket) {
     function drawAllBots() {
-        socket.emit('drawAllBots', bots);
+        io.emit('drawAllBots', bots);
     }
 
     function onPostBot(bot) {

@@ -17,11 +17,10 @@
         colors[i].addEventListener('click', onColorUpdate, false);
     }
 
-    socket.on('drawing', onDrawingEvent);
     socket.on('drawAllBots', onDrawAllBotsEvent);
-    socket.on('clear', onClearEvent);
+
     function emitBot(x, y, r, theta, color) {
-            socket.emit('postbot', {
+        socket.emit('postbot', {
             x: x,
             y: y,
             r: r,
@@ -29,6 +28,7 @@
             color: color
         });
     }
+
     function drawBot(x, y, r, theta, color) {
         context.beginPath();
         console.log("drawBot", x, y, r, theta, color);
@@ -40,7 +40,7 @@
 
 
     function onMouseDown(e) {
-        emitBot(e.clientX, e.clientY, 10, 0, current.color, true);
+        emitBot(e.clientX, e.clientY, 10, 0, current.color);
     }
 
 
@@ -49,26 +49,14 @@
     }
 
 
-    function onClearEvent() {
+    function onDrawAllBotsEvent(bots) {
         var w = canvas.width;
         var h = canvas.height;
         context.clearRect(0, 0, w, h);
-    }
-
-    function onDrawAllBotsEvent(bots){
-        var w = canvas.width;
-        var h = canvas.height;
-        context.clearRect(0, 0, w, h);
-        console.log("bots",bots);
-        for(var i = 0; i< bots.length; i++){
+        console.log("bots", bots);
+        for (var i = 0; i < bots.length; i++) {
             drawBot(bots[i].x, bots[i].y, bots[i].r, bots[i].theta, bots[i].color);
         }
-    }
-
-    function onDrawingEvent(data) {
-
-        console.log("onDraw", data);
-        //drawBot(data.x, data.y, data.r, data.theta, data.color);
     }
 
 

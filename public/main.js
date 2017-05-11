@@ -1,11 +1,33 @@
 'use strict';
 
 (function() {
-
+console.clear();
     var socket = io();
     var canvas = document.getElementById('whiteboard');
     var colors = document.getElementsByClassName('color');
     var context = canvas.getContext('2d');
+    var myBot = {};
+    $("body").keydown(onKeyDown);
+    var delta = 10;
+    function onKeyDown(e){
+        console.log("keydown",e,myBot);
+        if(e.key == "ArrowUp"){
+            myBot.y = myBot.y - delta*Math.cos(myBot.theta*Math.PI/180);
+            myBot.x = myBot.x + delta*Math.sin(myBot.theta*Math.PI/180);
+        }
+        if(e.key == "ArrowDown"){
+            myBot.y = myBot.y + delta*Math.cos(myBot.theta*Math.PI/180);
+            myBot.x = myBot.x - delta*Math.sin(myBot.theta*Math.PI/180);
+        }
+        if(e.key == "ArrowRight"){
+            myBot.theta = myBot.theta + delta;
+        } 
+                if(e.key == "ArrowLeft"){
+            myBot.theta = myBot.theta - delta;
+        }        
+       
+        emitBot(myBot.x, myBot.y, myBot.r, myBot.theta, myBot.color)
+    }
 
     var current = {
         color: 'black'
@@ -20,6 +42,11 @@
     socket.on('drawAllBots', onDrawAllBotsEvent);
 
     function emitBot(x, y, r, theta, color) {
+        myBot.x = x;
+        myBot.y = y;
+        myBot.r = r;
+        myBot.theta = theta;
+        myBot.color = color;
         socket.emit('postbot', {
             x: x,
             y: y,
@@ -37,7 +64,7 @@
         context.stroke();
         context.closePath();
         context.moveTo(x,y);
-        context.lineTo(x + r*Math.sin(Math.PI/180),y-r*Math.cos(Math.PI/180));
+        context.lineTo(x + r*Math.sin(theta*Math.PI/180),y-r*Math.cos(theta*Math.PI/180));
         context.stroke();
 
     }

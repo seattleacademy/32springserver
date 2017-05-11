@@ -33,9 +33,13 @@
         context.beginPath();
         console.log("drawBot", x, y, r, theta, color);
         context.arc(x, y, r, 0, Math.PI * 2);
-        context.fillStyle = color;
-        context.fill();
+        context.strokeStyle = color;
+        context.stroke();
         context.closePath();
+        context.moveTo(x,y);
+        context.lineTo(x + r*Math.sin(Math.PI/180),y-r*Math.cos(Math.PI/180));
+        context.stroke();
+
     }
 
 

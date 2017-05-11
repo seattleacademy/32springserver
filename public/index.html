@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Socket.IO whiteboard</title>
+  <title>SAAS Bots</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <canvas class="whiteboard" width="600" height="400"></canvas>
+  <canvas id="whiteboard" width="600" height="400"></canvas>
 
   <div class="colors">
     <div class="color black"></div>
@@ -19,15 +19,5 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/main.js"></script>
-<!--   <script>
-  socket = io();
-  canvas = document.getElementsByClassName('whiteboard')[0];
-  var colors = document.getElementsByClassName('color');
-  context = canvas.getContext('2d');
-
-  context.beginPath();
-context.arc(100,75,50,0,2*Math.PI);
-context.stroke();
-  </script> -->
 </body>
 </html>

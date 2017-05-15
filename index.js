@@ -9,25 +9,28 @@ var bots = [];
 
 
 function onConnection(socket) {
-    function drawAllBots() {
-        io.emit('drawAllBots', bots);
+    function postAllBots() {
+        io.emit('postAllBots', bots);
     }
 
     function onPostBot(bot) {
-        if (bots.length > 0) { //Remove bot of same color
-            for (var i = bots.length; i > 0; i--) {
-                if (bot.color == bots[i - 1].color) {
-                    bots.splice(i - 1);
+        var botExists = false;
+        for (var i = 0; i < bots.length; i++) {
+            if (bot.color == bots[i].color) {
+                botExists = true;
+                for (key in bot) {
+                    bots[i][key] = bot[key];
                 }
             }
         }
-        bots.push(bot);
-        drawAllBots();
+        if (botExists == false) {
+            bots.push(bot);
+        }
+        postAllBots();
     }
 
     socket.on('postbot', onPostBot);
-
-    drawAllBots();
+    postAllBots();
 }
 
 io.on('connection', onConnection);

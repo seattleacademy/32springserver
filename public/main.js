@@ -14,6 +14,8 @@
     function onKeyDown(e) {
         console.log("keydown", e, myBot);
         if (e.key == "ArrowUp") {
+            myBot.vL = 20;
+            myBot.vR = 20;
             myBot.y = myBot.y - delta * Math.cos(myBot.theta * Math.PI / 180);
             myBot.x = myBot.x + delta * Math.sin(myBot.theta * Math.PI / 180);
         }
@@ -29,8 +31,12 @@
             myBot.theta = myBot.theta - delta;
             e.preventDefault();
         }
-
-        emitBot(myBot.x, myBot.y, myBot.r, myBot.theta, myBot.color)
+        if (e.key == "space") {
+            myBot.vL = 0;
+            myBot.vR = 0;
+            e.preventDefault();
+        }
+        emitBot(myBot)
     }
 
     var current = {
@@ -45,24 +51,21 @@
 
     socket.on('postAllBots', onPostBotsEvent);
 
-    function emitBot(x, y, r, theta, color) {
-        myBot.x = x;
-        myBot.y = y;
-        myBot.r = r;
-        myBot.theta = theta;
-        myBot.color = color;
-        socket.emit('postbot', {
-            x: x,
-            y: y,
-            r: r,
-            theta: theta,
-            color: color
-        });
+    function emitBot(bot) {
+        // myBot.x = x;
+        // myBot.y = y;
+        // myBot.r = r;
+        // myBot.theta = theta;
+        // myBot.color = color;
+        socket.emit('postbot', bot);
     }
 
     function drawBot(bot) {
         context.beginPath();
-        console.log("drawBot", bot);
+        bot.name = bot.name || bot.color;
+        bot.humidity = bot.humidity || "";
+        bot.theta = bot.heading || bot.theta;
+        console.log("drawBot", bot.theta);
         context.arc(bot.x, bot.y, bot.r, 0, Math.PI * 2);
         context.strokeStyle = bot.color;
         context.stroke();
@@ -70,10 +73,19 @@
         context.moveTo(bot.x, bot.y);
         context.lineTo(bot.x + bot.r * Math.sin(bot.theta * Math.PI / 180), bot.y - bot.r * Math.cos(bot.theta * Math.PI / 180));
         context.stroke();
+        context.font = "10px Arial";
+        context.fillText(bot.name,bot.x + bot.r + 1,bot.y -bot.r -1);
+        context.fillText(bot.humidity,bot.x + bot.r + 1,bot.y +bot.r +1);
+
     }
 
     function onMouseDown(e) {
-        emitBot(e.clientX, e.clientY, 10, 0, current.color);
+        myBot.x = e.clientX;
+        myBot.y = e.clientY;
+        myBot.r = myBot.r || 10;
+        myBot.theta = myBot.theta || 0;
+        myBot.color = current.color;
+         emitBot(myBot);
     }
 
     function onColorUpdate(e) {
@@ -82,6 +94,7 @@
 
     function onPostBotsEvent(allBots) {
         bots = allBots;
+       //socket.broadcast.emit("drawAllBots",bots);
         window.requestAnimationFrame(drawBots);
     }
 

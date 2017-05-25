@@ -9,6 +9,14 @@ var bots = [];
 
 
 function onConnection(socket) {
+
+    function sendDriveBot(command){
+        console.log("sendDriveBot",command);
+        io.emit('drive', command);
+    }
+
+        socket.on('sendDriveBot', sendDriveBot);
+
     function postAllBots() {
         io.emit('postAllBots', bots);
     }
@@ -16,7 +24,7 @@ function onConnection(socket) {
     function onPostBot(bot) {
         var botExists = false;
         for (var i = 0; i < bots.length; i++) {
-            if (bot.color == bots[i].color) {
+            if (bot.name == bots[i].name) {
                 botExists = true;
                 for (key in bot) {
                     bots[i][key] = bot[key];

@@ -11,7 +11,23 @@
     $("body").keydown(onKeyDown);
     var delta = 10;
 
-    function onKeyDown(e) {
+    function stopBot(e){
+        var whichbot = $("#whichbot").val();
+        socket.emit('sendDriveBot', {bot:whichbot,left:0,right:0});
+    }
+
+    $("#stopbot").click(stopBot);
+
+    function driveBot(e){
+        var whichbot = $("#whichbot").val();
+        var vL = $("#vL").val();
+        var vR = $("#vR").val();
+        socket.emit('sendDriveBot', {bot:whichbot,left:vL,right:vR});
+    }
+
+    $("#driveBot").click(driveBot);
+
+        function onKeyDown(e) {
         console.log("keydown", e, myBot);
         if (e.key == "ArrowUp") {
             myBot.vL = 20;
@@ -36,7 +52,8 @@
             myBot.vR = 0;
             e.preventDefault();
         }
-        emitBot(myBot)
+        emitBot(myBot);
+
     }
 
     var current = {
@@ -57,7 +74,10 @@
         // myBot.r = r;
         // myBot.theta = theta;
         // myBot.color = color;
+        socket.emit('event',"tewst");
+        console.log("tewst")
         socket.emit('postbot', bot);
+        console.log("emitBot",bot);
     }
 
     function drawBot(bot) {
@@ -65,7 +85,7 @@
         bot.name = bot.name || bot.color;
         bot.humidity = bot.humidity || "";
         bot.theta = bot.heading || bot.theta;
-        console.log("drawBot", bot.theta);
+        //console.log("drawBot", bot.theta);
         context.arc(bot.x, bot.y, bot.r, 0, Math.PI * 2);
         context.strokeStyle = bot.color;
         context.stroke();

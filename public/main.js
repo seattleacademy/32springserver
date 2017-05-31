@@ -29,28 +29,40 @@
 
         function onKeyDown(e) {
         console.log("keydown", e, myBot);
+                        var whichbot = $("#whichbot").val();
+
         if (e.key == "ArrowUp") {
             myBot.vL = 20;
             myBot.vR = 20;
             myBot.y = myBot.y - delta * Math.cos(myBot.theta * Math.PI / 180);
             myBot.x = myBot.x + delta * Math.sin(myBot.theta * Math.PI / 180);
+        driveBot(e);
+        socket.emit('sendDriveBot', {bot:whichbot,left:50,right:50});
         }
         if (e.key == "ArrowDown") {
             myBot.y = myBot.y + delta * Math.cos(myBot.theta * Math.PI / 180);
             myBot.x = myBot.x - delta * Math.sin(myBot.theta * Math.PI / 180);
+                socket.emit('sendDriveBot', {bot:whichbot,left:-50,right:-50});
+
         }
         if (e.key == "ArrowRight") {
             myBot.theta = myBot.theta + delta;
             e.preventDefault();
+                    socket.emit('sendDriveBot', {bot:whichbot,left:50,right:-50});
+
         }
         if (e.key == "ArrowLeft") {
             myBot.theta = myBot.theta - delta;
             e.preventDefault();
+                    socket.emit('sendDriveBot', {bot:whichbot,left:-50,right:50});
+
         }
         if (e.key == "space") {
             myBot.vL = 0;
             myBot.vR = 0;
             e.preventDefault();
+                    socket.emit('sendDriveBot', {bot:whichbot,left:0,right:0});
+
         }
         emitBot(myBot);
 
@@ -69,15 +81,7 @@
     socket.on('postAllBots', onPostBotsEvent);
 
     function emitBot(bot) {
-        // myBot.x = x;
-        // myBot.y = y;
-        // myBot.r = r;
-        // myBot.theta = theta;
-        // myBot.color = color;
-        socket.emit('event',"tewst");
-        console.log("tewst")
         socket.emit('postbot', bot);
-        console.log("emitBot",bot);
     }
 
     function drawBot(bot) {
@@ -105,6 +109,7 @@
         myBot.r = myBot.r || 10;
         myBot.theta = myBot.theta || 0;
         myBot.color = current.color;
+        myBot.name = $("#whichbot").val();
          emitBot(myBot);
     }
 
